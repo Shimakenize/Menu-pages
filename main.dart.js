@@ -91080,7 +91080,7 @@ s=p}for(;;)switch(s){case 0:p=4
 m=$.aJO().h(0,"liff")
 if(m==null){s=1
 break}k=t.N
-k=A.ay(["liffId","YOUR_LIFF_ID"],k,k)
+k=A.ay(["liffId","2010062274-OwIXa3Ei"],k,k)
 s=7
 return A.T(n.Qg(m.im("init",A.c([A.azs(A.aO9(k))],t.Fu))),$async$vd)
 case 7:if(!A.oh(m.im("isLoggedIn",[]))){m.im("login",[])
