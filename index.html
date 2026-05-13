@@ -47,6 +47,18 @@
     });
   </script>
 
+  <script>
+    // LIFF Full サイズでもスワイプ閉じが発火する問題への対処。
+    // Flutter Web (CanvasKit) は pointer events で独自スクロールするため
+    // touchmove の preventDefault() を呼んでも Flutter スクロールは壊れない。
+    (function () {
+      document.addEventListener('touchmove', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }, { passive: false, capture: true });
+    })();
+  </script>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
