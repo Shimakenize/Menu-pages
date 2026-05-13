@@ -18,7 +18,13 @@
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
 
   <style>
-    body { margin: 0; }
+    /* LIFFの「スワイプで閉じる」ジェスチャーをFlutterスクロールより優先させない */
+    html, body {
+      margin: 0;
+      height: 100%;
+      overscroll-behavior: none;
+      touch-action: pan-y;
+    }
     #loading {
       position: fixed;
       inset: 0;
