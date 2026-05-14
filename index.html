@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <base href="//Menu-pages/">
+  <base href="/">
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="家族メニュー管理アプリ">
@@ -48,21 +48,23 @@
   </script>
 
   <script>
-    // Service Worker が古いバージョンをキャッシュしている場合に強制更新する。
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        registrations.forEach(function(reg) {
-          reg.update().then(function() {
-            if (reg.waiting) {
-              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-            }
+    // SW が古いキャッシュを配信している場合に一度だけ強制リロードする。
+    // sessionStorage フラグで無限ループを防ぐ。
+    (function () {
+      if (!('serviceWorker' in navigator)) return;
+      if (sessionStorage.getItem('sw_cleared')) return;
+      navigator.serviceWorker.getRegistrations().then(function (regs) {
+        var jobs = regs.map(function (r) { return r.unregister(); });
+        return Promise.all(jobs).then(function () {
+          return caches.keys().then(function (keys) {
+            return Promise.all(keys.map(function (k) { return caches.delete(k); }));
           });
         });
-      });
-      navigator.serviceWorker.addEventListener('controllerchange', function() {
+      }).then(function () {
+        sessionStorage.setItem('sw_cleared', '1');
         window.location.reload();
       });
-    }
+    })();
   </script>
 
   <script>
