@@ -96978,7 +96978,7 @@ s.toString
 return this.a.w=s},
 $S:0}
 A.ao7.prototype={
-$1(a){return a!=="\u3059\u3079\u3066"},
+$1(a){return a!=="Menu"&&a!=="\u304a\u6c17\u306b\u5165\u308a"},
 $S:28}
 A.ao8.prototype={
 $1(a){var s=null,r=this.a
