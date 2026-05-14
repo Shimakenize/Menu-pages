@@ -13,6 +13,8 @@
   <link rel="icon" type="image/png" href="favicon.png"/>
   <title>Menu</title>
   <link rel="manifest" href="manifest.json">
+  <!-- CI が 02cbe57 をコミットハッシュに置換する。新デプロイ検出に使用 -->
+  <meta name="build-id" content="02cbe57">
 
   <!-- LIFF SDK -->
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
@@ -48,11 +50,15 @@
   </script>
 
   <script>
-    // SW が古いキャッシュを配信している場合に一度だけ強制リロードする。
-    // sessionStorage フラグで無限ループを防ぐ。
+    // 新デプロイ検出: build-id が localStorage の値と異なればSWをリセットしてリロード。
+    // sessionStorage と違い localStorage はタブをまたいで保持されるため
+    // デプロイのたびに必ず1回だけクリアが走る。
     (function () {
       if (!('serviceWorker' in navigator)) return;
-      if (sessionStorage.getItem('sw_cleared')) return;
+      var meta = document.querySelector('meta[name="build-id"]');
+      var buildId = meta ? meta.content : '';
+      if (!buildId || buildId === '02cbe57') return; // ローカル開発時はスキップ
+      if (localStorage.getItem('sw_build_id') === buildId) return;
       navigator.serviceWorker.getRegistrations().then(function (regs) {
         var jobs = regs.map(function (r) { return r.unregister(); });
         return Promise.all(jobs).then(function () {
@@ -61,7 +67,7 @@
           });
         });
       }).then(function () {
-        sessionStorage.setItem('sw_cleared', '1');
+        localStorage.setItem('sw_build_id', buildId);
         window.location.reload();
       });
     })();
