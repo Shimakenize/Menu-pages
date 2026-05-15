@@ -13,8 +13,8 @@
   <link rel="icon" type="image/png" href="favicon.png"/>
   <title>Menu</title>
   <link rel="manifest" href="manifest.json">
-  <!-- CI が b0189d8 をコミットハッシュに置換する。新デプロイ検出に使用 -->
-  <meta name="build-id" content="b0189d8">
+  <!-- CI が a80a69d をコミットハッシュに置換する。新デプロイ検出に使用 -->
+  <meta name="build-id" content="a80a69d">
 
   <!-- LIFF SDK -->
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
@@ -62,7 +62,7 @@
       // build-id が変わるたびに実行される。
       var meta = document.querySelector('meta[name="build-id"]');
       var buildId = meta ? meta.content : '';
-      if (buildId && buildId !== 'b0189d8' &&
+      if (buildId && buildId !== 'a80a69d' &&
           localStorage.getItem('sw_build_id') !== buildId) {
         navigator.serviceWorker.getRegistrations().then(function (regs) {
           return Promise.all(regs.map(function (r) { return r.unregister(); }));
