@@ -13,8 +13,8 @@
   <link rel="icon" type="image/png" href="favicon.png"/>
   <title>Menu</title>
   <link rel="manifest" href="manifest.json">
-  <!-- CI が d600095 をコミットハッシュに置換する。新デプロイ検出に使用 -->
-  <meta name="build-id" content="d600095">
+  <!-- CI が 0b37905 をコミットハッシュに置換する。新デプロイ検出に使用 -->
+  <meta name="build-id" content="0b37905">
 
   <!-- LIFF SDK -->
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
@@ -57,7 +57,7 @@
       if (!('serviceWorker' in navigator)) return;
       var meta = document.querySelector('meta[name="build-id"]');
       var buildId = meta ? meta.content : '';
-      if (!buildId || buildId === 'd600095') return; // ローカル開発時はスキップ
+      if (!buildId || buildId === '0b37905') return; // ローカル開発時はスキップ
       if (localStorage.getItem('sw_build_id') === buildId) return;
       navigator.serviceWorker.getRegistrations().then(function (regs) {
         var jobs = regs.map(function (r) { return r.unregister(); });
