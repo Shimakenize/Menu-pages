@@ -13,8 +13,8 @@
   <link rel="icon" type="image/png" href="favicon.png"/>
   <title>Menu</title>
   <link rel="manifest" href="manifest.json">
-  <!-- CI が 0b37905 をコミットハッシュに置換する。新デプロイ検出に使用 -->
-  <meta name="build-id" content="0b37905">
+  <!-- CI が b0189d8 をコミットハッシュに置換する。新デプロイ検出に使用 -->
+  <meta name="build-id" content="b0189d8">
 
   <!-- LIFF SDK -->
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
@@ -50,26 +50,31 @@
   </script>
 
   <script>
-    // 新デプロイ検出: build-id が localStorage の値と異なればSWをリセットしてリロード。
-    // sessionStorage と違い localStorage はタブをまたいで保持されるため
-    // デプロイのたびに必ず1回だけクリアが走る。
+    // SW が新バージョンに切り替わった瞬間に自動リロード。
+    // Flutter の SW は install 時に skipWaiting() を呼ぶため、
+    // 新デプロイ後は controllerchange → reload で確実に最新版が表示される。
     (function () {
       if (!('serviceWorker' in navigator)) return;
+      navigator.serviceWorker.addEventListener('controllerchange', function () {
+        window.location.reload();
+      });
+      // 既存の古いキャッシュに詰まっている場合の一回限り強制リセット。
+      // build-id が変わるたびに実行される。
       var meta = document.querySelector('meta[name="build-id"]');
       var buildId = meta ? meta.content : '';
-      if (!buildId || buildId === '0b37905') return; // ローカル開発時はスキップ
-      if (localStorage.getItem('sw_build_id') === buildId) return;
-      navigator.serviceWorker.getRegistrations().then(function (regs) {
-        var jobs = regs.map(function (r) { return r.unregister(); });
-        return Promise.all(jobs).then(function () {
+      if (buildId && buildId !== 'b0189d8' &&
+          localStorage.getItem('sw_build_id') !== buildId) {
+        navigator.serviceWorker.getRegistrations().then(function (regs) {
+          return Promise.all(regs.map(function (r) { return r.unregister(); }));
+        }).then(function () {
           return caches.keys().then(function (keys) {
             return Promise.all(keys.map(function (k) { return caches.delete(k); }));
           });
+        }).then(function () {
+          localStorage.setItem('sw_build_id', buildId);
+          window.location.reload();
         });
-      }).then(function () {
-        localStorage.setItem('sw_build_id', buildId);
-        window.location.reload();
-      });
+      }
     })();
   </script>
 
