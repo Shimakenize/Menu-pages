@@ -13,8 +13,9 @@
   <link rel="icon" type="image/png" href="favicon.png"/>
   <title>Menu</title>
   <link rel="manifest" href="manifest.json">
-  <!-- CI が BUILD_ID をコミットハッシュに置換する。新デプロイ検出に使用 -->
-  <meta name="build-id" content="afc1d37">
+  <!-- CI が BUILD_ID / APP_VERSION を置換。LIFFキャッシュ破棄に使用 -->
+  <meta name="build-id" content="5ba1ef1">
+  <meta name="app-version" content="2.1.0(49)">
 
   <!-- LIFF SDK -->
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
@@ -60,10 +61,13 @@
       });
       // 既存の古いキャッシュに詰まっている場合の一回限り強制リセット。
       // build-id が変わるたびに実行される。
-      var meta = document.querySelector('meta[name="build-id"]');
-      var buildId = meta ? meta.content : '';
-      if (buildId && buildId !== 'BUILD_ID' &&
-          localStorage.getItem('sw_build_id') !== buildId) {
+      var buildMeta = document.querySelector('meta[name="build-id"]');
+      var verMeta = document.querySelector('meta[name="app-version"]');
+      var buildId = buildMeta ? buildMeta.content : '';
+      var appVer = verMeta ? verMeta.content : '';
+      var cacheKey = buildId + '_' + appVer;
+      if (cacheKey && buildId !== 'BUILD_ID' && appVer !== 'APP_VERSION' &&
+          localStorage.getItem('sw_cache_key') !== cacheKey) {
         navigator.serviceWorker.getRegistrations().then(function (regs) {
           return Promise.all(regs.map(function (r) { return r.unregister(); }));
         }).then(function () {
@@ -71,7 +75,8 @@
             return Promise.all(keys.map(function (k) { return caches.delete(k); }));
           });
         }).then(function () {
-          localStorage.setItem('sw_build_id', buildId);
+          localStorage.setItem('sw_cache_key', cacheKey);
+          localStorage.removeItem('sw_build_id');
           window.location.reload();
         });
       }
@@ -90,6 +95,6 @@
     })();
   </script>
 
-  <script src="flutter_bootstrap.js" async></script>
+  <script src="flutter_bootstrap.js?v=2.1.0(49)" async></script>
 </body>
 </html>
